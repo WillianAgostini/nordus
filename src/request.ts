@@ -102,7 +102,7 @@ export class NordusRequest {
       case "arraybuffer":
         return (await response.arrayBuffer()) as T;
       case "formData":
-        return (await response.formData()) as T;
+        return (await response.text()) as T;
       default:
         return undefined;
     }
