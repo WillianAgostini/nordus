@@ -12,6 +12,9 @@ export interface NordusConfig {
 
 export interface NordusConfigApi extends NordusConfig, Method { }
 
+export interface NordusResponse<T = any> extends Response {
+    data: T;
+}
 
 export class NordusRequest {
 
@@ -30,8 +33,12 @@ export class NordusRequest {
             request
         }
 
-        const response = await fetch(request);
-        return this.getResponseFromType<T>(response, nordusConfig);
+        const response = await fetch(request) as NordusResponse<T>;
+        if(!response.ok)
+            throw new Error(response.statusText);
+                    
+        response.data = await this.getResponseFromType<T>(response, nordusConfig);
+        return response;
     }
 
     private getBody(nordusConfig: NordusConfigApi) {
