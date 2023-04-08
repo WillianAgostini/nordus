@@ -105,6 +105,24 @@ try {
 }
 ```
 
+You can intercept requests or responses before they are handled by `then` or `catch`.
+
+```js
+const instance = create(
+  {
+    baseURL: "http://localhost:5000",
+    interceptors: {
+      request: (err: Error, request: Request) => {
+        request.headers.set("access_token", "Bearer 123");
+      },
+      response: (err: Error, request: NordusResponse) => {
+        console.log(request);
+      },
+    },
+  }
+);
+```
+
 ## License
 
 [MIT](LICENSE)
