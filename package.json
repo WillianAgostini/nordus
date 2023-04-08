@@ -1,6 +1,6 @@
 {
   "name": "nordus",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,5 +28,31 @@
   "bugs": {
     "url": "https://github.com/WillianAgostini/nordus/issues"
   },
-  "homepage": "https://github.com/WillianAgostini/nordus#readme"
+  "homepage": "https://github.com/WillianAgostini/nordus#readme",
+  "keywords": [
+    "node",
+		"fetch",
+    "http",
+    "https",
+		"http2",
+    "promise",
+		"get",
+		"post",
+		"put",
+		"patch",
+		"delete",
+		"url",
+		"uri",
+		"request",
+		"simple",
+		"curl",
+		"wget",
+		"net",
+		"network",
+		"requests",
+		"human-friendly",
+		"axios",
+		"superagent",
+		"node-fetch"
+  ]
 }
