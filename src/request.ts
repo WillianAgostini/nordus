@@ -4,7 +4,6 @@ export type Method = {
 }
 
 export interface NordusConfig {
-    baseURL?: string;
     headers?: Record<string, string>;
     responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' | 'formData';
     body?: any;
@@ -19,7 +18,7 @@ export interface NordusResponse<T = any> extends Response {
 export class NordusRequest {
 
     async request<T = any>(url: string, nordusConfig: NordusConfigApi) {
-        const urlRequest = this.generateURL(nordusConfig, url);
+        const urlRequest = this.generateURL(url);
         const body = this.getBody(nordusConfig);
         const request = new Request(urlRequest, {
             method: nordusConfig?.method,
@@ -67,10 +66,7 @@ export class NordusRequest {
         }
     }
 
-    private generateURL(nordusConfig: NordusConfig, url: string) {
-        if (nordusConfig?.baseURL)
-            return new URL(nordusConfig.baseURL + url);
-
+    private generateURL(url: string) {
         return new URL(url)
     }
 
