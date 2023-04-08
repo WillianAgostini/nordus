@@ -21,8 +21,8 @@ describe("request", () => {
           test: "test",
         },
       });
-    } catch (error) {
-      expect(error.message).toEqual("Unknown response type: undefined");
+    } catch (error: any) {
+      expect(error?.message).toEqual("Unknown response type: undefined");
     }
   });
 
@@ -33,8 +33,8 @@ describe("request", () => {
       await nordus.request("/localhost", {
         method: "POST",
       });
-    } catch (error) {
-      expect(error.message).toEqual("Invalid URL");
+    } catch (error: any) {
+      expect(error?.message).toEqual("Invalid URL");
     }
   });
 });

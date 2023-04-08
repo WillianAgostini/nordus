@@ -122,7 +122,7 @@ describe("index", () => {
     );
     try {
       await get("http://localhost:5000");
-    } catch (error) {
+    } catch (error: any) {
       expect(error.message).toEqual("Bad Request");
     }
   });

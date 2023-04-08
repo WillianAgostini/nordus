@@ -12,7 +12,7 @@ export interface NordusConfig {
 export interface NordusConfigApi extends NordusConfig, Method {}
 
 export interface NordusResponse<T = any> extends Response {
-  data: T;
+  data?: T;
 }
 
 export class NordusRequest {
@@ -97,7 +97,7 @@ export class NordusRequest {
       case "formData":
         return (await response.formData()) as T;
       default:
-        return null;
+        return undefined;
     }
   }
 }
