@@ -1,6 +1,6 @@
 {
   "name": "nordus",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Promise based HTTP client for the node.js using Fetch based on Axios",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,7 +8,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "npm run format && tsc",
     "test": "jest",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
