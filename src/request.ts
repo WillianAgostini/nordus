@@ -2,12 +2,18 @@ export type Method = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 };
 
+interface Interceptors {
+  request?: (err: Error, request: Request) => void;
+  response?: (err: Error, response: NordusResponse) => void;
+}
+
 export interface NordusConfig {
   baseURL?: string;
   headers?: Record<string, string>;
   params?: Record<string, string>;
   responseType?: "json" | "text" | "blob" | "arraybuffer" | "formData";
   body?: any;
+  interceptors?: Interceptors;
 }
 
 export interface NordusConfigApi extends NordusConfig, Method {}
@@ -17,25 +23,69 @@ export interface NordusResponse<T = any> extends Response {
 }
 
 export class NordusRequest {
+  readonly requestInterceptors: any[] = [];
+  readonly responseInterceptors: any[] = [];
+
   async request<T = any>(url: string, nordusConfigApi: NordusConfigApi) {
-    const urlRequest = this.generateURL(url, nordusConfigApi);
-    const body = this.getBody(nordusConfigApi);
-    const request = new Request(urlRequest, {
-      method: nordusConfigApi?.method,
-      body: body,
-    });
+    if (nordusConfigApi.interceptors) {
+      this.registerInterceptors(nordusConfigApi.interceptors);
+    }
 
-    this.setHeaders(nordusConfigApi, request);
-    this.setRequestType(request, nordusConfigApi);
+    const request = this.prepareRequest(url, nordusConfigApi);
+    return await this.makeRequest<T>(request, nordusConfigApi);
+  }
 
-    const response = (await fetch(request)) as NordusResponse<T>;
-    if (!response.ok) throw new Error(response.statusText);
+  registerInterceptors(interceptors: Interceptors) {
+    if (interceptors.request)
+      this.requestInterceptors.push(interceptors.request);
+    if (interceptors.response)
+      this.responseInterceptors.push(interceptors.response);
+  }
 
-    response.data = await this.getResponseFromType<T>(
-      response,
-      nordusConfigApi
-    );
-    return response;
+  private prepareRequest(url: string, nordusConfigApi: NordusConfigApi) {
+    try {
+      const urlRequest = this.generateURL(url, nordusConfigApi);
+      const body = this.getBody(nordusConfigApi);
+      const request = new Request(urlRequest, {
+        method: nordusConfigApi?.method,
+        body: body,
+      });
+
+      this.setHeaders(nordusConfigApi, request);
+      this.setRequestType(request, nordusConfigApi);
+      this.requestInterceptors.forEach((interceptor) =>
+        interceptor(null, request)
+      );
+      return request;
+    } catch (error) {
+      this.requestInterceptors.forEach((interceptor) =>
+        interceptor(error, null)
+      );
+      throw error;
+    }
+  }
+
+  private async makeRequest<T = any>(
+    request: Request,
+    nordusConfigApi: NordusConfigApi
+  ) {
+    try {
+      const response = (await fetch(request)) as NordusResponse<T>;
+
+      if (!response.ok) throw new Error(response.statusText);
+
+      response.data = await this.getResponseFromType<T>(
+        response,
+        nordusConfigApi
+      );
+      this.responseInterceptors.forEach((interceptor) =>
+        interceptor(null, response)
+      );
+      return response;
+    } catch (error) {
+      this.responseInterceptors.forEach((interceptor) => interceptor(error));
+      throw error;
+    }
   }
 
   private getBody(nordusConfig: NordusConfigApi) {
