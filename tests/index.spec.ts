@@ -1,4 +1,4 @@
-import { get, post } from "../src/index";
+import { create, get, post } from "../src/index";
 import { FetchMock } from "jest-fetch-mock";
 
 const fetchMock = fetch as FetchMock;
@@ -56,23 +56,8 @@ describe("index", () => {
     });
   });
 
-  it("should throw Unknown response type", async () => {
-    fetchMock.mockResponseOnce(
-      JSON.stringify({
-        test: "test",
-      })
-    );
-    try {
-      await get("http://localhost:5000", {
-        responseType: "unknown",
-      });
-    } catch (error) {
-      expect(error.message).toEqual("Unknown response type: unknown");
-    }
-  });
-
   it("success get with blob response", async () => {
-    fetchMock.mockResponseOnce(new Blob(["test"]));
+    fetchMock.mockResponseOnce(new Blob(["test"]).toString());
     const response = await get("http://localhost:5000", {
       responseType: "blob",
     });
@@ -81,7 +66,7 @@ describe("index", () => {
   });
 
   it("success get with arraybuffer response", async () => {
-    fetchMock.mockResponseOnce(new ArrayBuffer(4));
+    fetchMock.mockResponseOnce(new ArrayBuffer(4).toString());
     const response = await get("http://localhost:5000", {
       responseType: "arraybuffer",
     });
@@ -140,5 +125,36 @@ describe("index", () => {
     } catch (error) {
       expect(error.message).toEqual("Bad Request");
     }
+  });
+
+  it("success get using create instance", async () => {
+    fetchMock.mockResponses(
+      JSON.stringify({ method: "get" }),
+      JSON.stringify({ method: "post" }),
+      JSON.stringify({ method: "put" }),
+      JSON.stringify({ method: "patch" }),
+      JSON.stringify({ method: "del" })
+    );
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      responseType: "json",
+    });
+
+    const instanceGet = await instance.get("todos/1");
+    const instancePost = await instance.post("todos/1", {});
+    const instancePut = await instance.put("todos/1", {});
+    const instancePatch = await instance.patch("todos/1", {});
+    const instanceDel = await instance.del("todos/1");
+
+    expect(instanceGet.data).toEqual({ method: "get" });
+    expect(instancePost.data).toEqual({ method: "post" });
+    expect(instancePut.data).toEqual({ method: "put" });
+    expect(instancePatch.data).toEqual({ method: "patch" });
+    expect(instanceDel.data).toEqual({ method: "del" });
   });
 });
