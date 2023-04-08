@@ -1,4 +1,4 @@
-import { create, get, post } from "../src/index";
+import { create, del, get, patch, post, put } from "../src/index";
 import { FetchMock } from "jest-fetch-mock";
 
 const fetchMock = fetch as FetchMock;
@@ -56,6 +56,57 @@ describe("index", () => {
     });
   });
 
+  it("success put with default responseType", async () => {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        test: "test",
+      })
+    );
+    const response = await put("http://localhost:5000", {
+      body: {
+        test: "test",
+      },
+    });
+
+    expect(response.data).toEqual({
+      test: "test",
+    });
+  });
+
+  it("success patch with default responseType", async () => {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        test: "test",
+      })
+    );
+    const response = await patch("http://localhost:5000", {
+      body: {
+        test: "test",
+      },
+    });
+
+    expect(response.data).toEqual({
+      test: "test",
+    });
+  });
+
+  it("success del with default responseType", async () => {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        test: "test",
+      })
+    );
+    const response = await del("http://localhost:5000", {
+      body: {
+        test: "test",
+      },
+    });
+
+    expect(response.data).toEqual({
+      test: "test",
+    });
+  });
+
   it("success get with blob response", async () => {
     fetchMock.mockResponseOnce(new Blob(["test"]).toString());
     const response = await get("http://localhost:5000", {
@@ -72,6 +123,18 @@ describe("index", () => {
     });
 
     expect(String(response.data)).toEqual(String(new ArrayBuffer(4)));
+  });
+
+  it("success get with formData response", async () => {
+    const formData = new FormData();
+    formData.append("test", "test");
+
+    fetchMock.mockResponseOnce(formData.toString());
+    const response = await get("http://localhost:5000", {
+      responseType: "formData",
+    });
+
+    expect(String(response.data)).toEqual(String(new FormData()));
   });
 
   it("success get with text response", async () => {
@@ -127,7 +190,27 @@ describe("index", () => {
     }
   });
 
+
   it("success get using create instance", async () => {
+    fetchMock.mockResponse(
+      JSON.stringify({ method: "get" }),
+    );
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      responseType: "json",
+    });
+
+    const instanceGet = await instance.get("/todos/1");
+
+    expect(instanceGet.data).toEqual({ method: "get" });
+  });
+
+  it("success get using create instance eith concurrency", async () => {
     fetchMock.mockResponses(
       JSON.stringify({ method: "get" }),
       JSON.stringify({ method: "post" }),
