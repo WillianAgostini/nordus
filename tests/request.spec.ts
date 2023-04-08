@@ -48,9 +48,6 @@ describe("request", () => {
       },
     });
     const lastCall = fetchMock?.mock?.lastCall?.at(0) as any;
-    expect(lastCall?.url).toEqual(
-      "http://localhost:5000/?test=test"
-    );
+    expect(lastCall?.url).toEqual("http://localhost:5000/?test=test");
   });
-
 });
