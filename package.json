@@ -1,7 +1,7 @@
 {
   "name": "nordus",
-  "version": "0.0.5",
-  "description": "",
+  "version": "0.0.6",
+  "description": "Promise based HTTP client for the node.js using Fetch based on Axios",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -29,6 +29,10 @@
     "url": "https://github.com/WillianAgostini/nordus/issues"
   },
   "homepage": "https://github.com/WillianAgostini/nordus#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WillianAgostini/nordus.git"
+  },
   "keywords": [
     "node",
 		"fetch",

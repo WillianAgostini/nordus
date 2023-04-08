@@ -94,7 +94,6 @@ You can create a new instance of nordus with a custom config.
 ```js
 const instance = nordus.create({
   baseURL: 'https://some-domain.com/api/',
-  timeout: 1000,
   headers: {'X-Custom-Header': 'foobar'}
 });
 
