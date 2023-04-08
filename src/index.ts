@@ -1,4 +1,9 @@
-import { NordusConfig, NordusConfigApi, NordusRequest } from "./request";
+import {
+  NordusConfig,
+  NordusConfigApi,
+  NordusRequest,
+  NordusResponse,
+} from "./request";
 
 export async function get<T = any>(url: string, nordusConfig?: NordusConfig) {
   const { nordusRequest, nordusConfigApi } = createRequest(nordusConfig);
@@ -54,6 +59,30 @@ function createRequest(nordusConfig?: NordusConfig) {
   const nordusRequest = new NordusRequest();
   const nordusConfigApi = getDefaultConfig(nordusConfig);
   return { nordusRequest, nordusConfigApi };
+}
+
+export function create(nordusConf?: NordusConfig) {
+  return {
+    get: <T = any>(url: string, nordusConfig?: NordusConfig) =>
+      get<T>(url, { ...nordusConfig, ...nordusConf }),
+    post: <T = any, D = any>(
+      url: string,
+      body: D,
+      nordusConfig?: NordusConfig
+    ) => post<T, D>(url, body, { ...nordusConfig, ...nordusConf }),
+    put: <T = any, D = any>(
+      url: string,
+      body: D,
+      nordusConfig?: NordusConfig
+    ) => put<T, D>(url, body, { ...nordusConfig, ...nordusConf }),
+    patch: <T = any, D = any>(
+      url: string,
+      body: D,
+      nordusConfig?: NordusConfig
+    ) => patch<T, D>(url, body, { ...nordusConfig, ...nordusConf }),
+    del: <T = any>(url: string, nordusConfig?: NordusConfig) =>
+      del<T>(url, { ...nordusConfig, ...nordusConf }),
+  };
 }
 
 function getDefaultConfig(nordusConfig?: NordusConfig) {
