@@ -37,4 +37,20 @@ describe("request", () => {
       expect(error?.message).toEqual("Invalid URL");
     }
   });
+
+  it("should generate URL with params", async () => {
+    const nordus = new NordusRequest();
+    fetchMock.mockResponseOnce("");
+    await nordus.request("http://localhost:5000", {
+      method: "POST",
+      params: {
+        test: "test",
+      },
+    });
+    const lastCall = fetchMock?.mock?.lastCall?.at(0) as any;
+    expect(lastCall?.url).toEqual(
+      "http://localhost:5000/?test=test"
+    );
+  });
+
 });

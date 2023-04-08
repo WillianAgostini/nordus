@@ -5,6 +5,7 @@ export type Method = {
 export interface NordusConfig {
   baseURL?: string;
   headers?: Record<string, string>;
+  params?: Record<string, string>;
   responseType?: "json" | "text" | "blob" | "arraybuffer" | "formData";
   body?: any;
 }
@@ -61,6 +62,12 @@ export class NordusRequest {
   private generateURL(url: string, nordusConfigApi: NordusConfigApi) {
     if (nordusConfigApi.baseURL)
       url = nordusConfigApi.baseURL + (url.startsWith("/") ? url : "/" + url);
+
+    if (nordusConfigApi.params) {
+      const params = new URLSearchParams(nordusConfigApi.params);
+      url += "?" + params.toString();
+    }
+
     return new URL(url);
   }
 
