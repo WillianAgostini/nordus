@@ -12,6 +12,7 @@ describe("interceptors", () => {
       responseType: "blob",
     });
 
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(String(response.data)).toEqual(String(new Blob(["test"])));
   });
 
