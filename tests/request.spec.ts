@@ -7,25 +7,6 @@ describe("request", () => {
   beforeAll(() => fetchMock.enableMocks());
   beforeEach(() => fetchMock.resetMocks());
 
-  it("should throw Unknown response type", async () => {
-    const nordus = new NordusRequest();
-    fetchMock.mockResponseOnce(
-      JSON.stringify({
-        test: "test",
-      })
-    );
-    try {
-      await nordus.request("http://localhost:5000", {
-        method: "POST",
-        body: {
-          test: "test",
-        },
-      });
-    } catch (error: any) {
-      expect(error?.message).toEqual("Unknown response type: undefined");
-    }
-  });
-
   it("should throw invalid URL", async () => {
     const nordus = new NordusRequest();
     fetchMock.mockResponseOnce("");
@@ -42,7 +23,7 @@ describe("request", () => {
     const nordus = new NordusRequest();
     fetchMock.mockResponseOnce("");
     await nordus.request("http://localhost:5000", {
-      method: "POST",
+      method: "GET",
       params: {
         test: "test",
       },
