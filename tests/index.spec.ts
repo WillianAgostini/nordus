@@ -312,4 +312,36 @@ describe("index", () => {
       expect(error.message).toEqual("Bad Request");
     }
   });
+
+  it("shoud interceptors call first on success request", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+    let hasResolved = false;
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        request: (err, request) => (hasResolved = true),
+      },
+    });
+    instance
+      .get("/todos/1")
+      .then(() => expect(hasResolved).toEqual(true));
+  });
+
+  it("shoud interceptors call first on unsuccess request", async () => {
+    fetchMock.mockResponseOnce("", {
+      status: 400,
+    });
+    let hasResolved = false;
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        response: (err, request) => (hasResolved = true),
+      },
+    });
+    instance
+      .get("/todos/1")
+      .catch(() => expect(hasResolved).toEqual(true));
+  });
 });
