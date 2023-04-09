@@ -1,7 +1,7 @@
 {
   "name": "nordus",
   "version": "0.0.8",
-  "description": "Promise based HTTP client for the node.js using Fetch based on Axios",
+  "description": "Promise based HTTP client for the node.js using Fetch",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

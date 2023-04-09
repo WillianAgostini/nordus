@@ -1,6 +1,6 @@
 # Nordus
 
-Promise based HTTP client for the node.js using Fetch based on Axios
+Promise based HTTP client for the node.js using Fetch
 
 ## Installing
 
@@ -31,7 +31,7 @@ import nordus from 'nordus';
 //const nordus = require('nordus'); // legacy way
 
 // Make a request for a user with a given ID
-nordus.get('/user?ID=12345')
+nordus.get('https://jsonplaceholder.typicode.com/users/1')
   .then(function (response) {
     // handle success
     console.log(response);
@@ -45,7 +45,7 @@ nordus.get('/user?ID=12345')
   });
 
 // Optionally the request above could also be done as
-nordus.get('/user', {
+nordus.get('https://jsonplaceholder.typicode.com/users/1', {
     params: {
       ID: 12345
     }
@@ -63,7 +63,7 @@ nordus.get('/user', {
 // Want to use async/await? Add the `async` keyword to your outer function/method.
 async function getUser() {
   try {
-    const response = await nordus.get('/user?ID=12345');
+    const response = await nordus.get('https://jsonplaceholder.typicode.com/users/1');
     console.log(response.data);
   } catch (error) {
     console.error(error);
@@ -75,33 +75,29 @@ Performing multiple concurrent requests
 
 ```js
 function getUserAccount() {
-  return nordus.get('/user/12345');
+  return nordus.get('https://jsonplaceholder.typicode.com/users/1');
 }
 
-function getUserPermissions() {
-  return nordus.get('/user/12345/permissions');
+function getComments() {
+  return nordus.get('https://jsonplaceholder.typicode.com/comments/1');
 }
 
-Promise.all([getUserAccount(), getUserPermissions()])
-  .then(function (results) {
-    const acct = results[0];
-    const perm = results[1];
-  });
+const response = await Promise.all([getUserAccount(), getComments()])
 ```
 
 You can create a new instance of nordus with a custom config.
 
 ```js
 const instance = nordus.create({
-  baseURL: 'https://some-domain.com/api/',
+  baseURL: 'https://jsonplaceholder.typicode.com',
   headers: {'X-Custom-Header': 'foobar'}
 });
 
 try {
-    const response = await instance.get('/user?ID=12345');
-    console.log(response.data);
+  const response = await instance.get('todos/1');
+  console.log(response.data);
 } catch (error) {
-    console.error(error);
+  console.error(error);
 }
 ```
 
@@ -110,7 +106,7 @@ You can intercept requests or responses before they are handled by `then` or `ca
 ```js
 const instance = create(
   {
-    baseURL: "http://localhost:5000",
+    baseURL: "https://jsonplaceholder.typicode.com/todos/1",
     interceptors: {
       request: (err: Error, request: Request) => {
         request.headers.set("access_token", "Bearer 123");
@@ -127,12 +123,12 @@ You can add timeout on each request.
 
 ```js
 try {
-  await get("http://localhost:5000/todos/1", {
-    timeout: 100,
+  const response = await nordus.get('https://jsonplaceholder.typicode.com/todos/1', {
+    timeout: 1000,
   });
-  expect(true).toBeFalsy();
+  console.log(response.data);
 } catch (error) {
-  expect(error.message).toEqual("The operation was aborted. ");
+  console.error(error);
 }
 ```
 
