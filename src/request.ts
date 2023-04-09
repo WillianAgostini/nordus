@@ -11,7 +11,7 @@ interface Interceptors {
   response?: InterceptorResponse;
 }
 
-export interface NordusConfig {
+export interface NordusConfig extends RequestInit {
   baseURL?: string;
   headers?: Record<string, string>;
   params?: Record<string, string>;
@@ -25,7 +25,7 @@ export interface NordusConfig {
   timeout?: number;
 }
 
-export interface NordusConfigApi extends NordusConfig, Method {}
+export interface NordusConfigApi extends NordusConfig {}
 
 export interface NordusResponse<T = any> extends Response {
   data?: T;
@@ -82,11 +82,16 @@ export class NordusRequest {
     try {
       const urlRequest = this.generateURL(url, nordusConfigApi);
       const body = this.getBody(nordusConfigApi);
-      const request = new Request(urlRequest, {
-        method: nordusConfigApi?.method,
-        body: body,
-        signal: abort.signal,
-      });
+      const init = {
+        ...nordusConfigApi,
+        ...{
+          method: nordusConfigApi?.method,
+          body: body,
+          signal: abort.signal,
+        },
+      };
+
+      const request = new Request(urlRequest, init);
 
       this.setHeaders(nordusConfigApi, request);
       this.setRequestType(request, nordusConfigApi);
