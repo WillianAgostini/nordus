@@ -14,6 +14,11 @@ export interface NordusConfig {
   responseType?: "json" | "text" | "blob" | "arraybuffer" | "formData";
   body?: any;
   interceptors?: Interceptors;
+  /**
+   * @default undefined
+   * Time in milliseconds to wait before aborting the request.
+   * */
+  timeout?: number;
 }
 
 export interface NordusConfigApi extends NordusConfig, Method {}
@@ -21,6 +26,11 @@ export interface NordusConfigApi extends NordusConfig, Method {}
 export interface NordusResponse<T = any> extends Response {
   data?: T;
 }
+
+type AbortTimeout = {
+  signal?: AbortSignal;
+  start: () => NodeJS.Timeout | undefined;
+};
 
 export class NordusRequest {
   readonly requestInterceptors: any[] = [];
@@ -31,8 +41,26 @@ export class NordusRequest {
       this.registerInterceptors(nordusConfigApi.interceptors);
     }
 
-    const request = this.prepareRequest(url, nordusConfigApi);
-    return await this.makeRequest<T>(request, nordusConfigApi);
+    const abort = this.createAbortTimeout(nordusConfigApi);
+    const request = this.prepareRequest(url, nordusConfigApi, abort);
+    return await this.makeRequest<T>(request, nordusConfigApi, abort);
+  }
+
+  private createAbortTimeout(nordusConfigApi: NordusConfigApi): AbortTimeout {
+    if (!nordusConfigApi.timeout) {
+      return {
+        signal: undefined,
+        start: () => undefined,
+      };
+    }
+    const controller = new AbortController();
+    const start = () =>
+      setTimeout(() => controller.abort(), nordusConfigApi.timeout);
+
+    return {
+      signal: controller.signal,
+      start: start,
+    };
   }
 
   registerInterceptors(interceptors: Interceptors) {
@@ -42,13 +70,18 @@ export class NordusRequest {
       this.responseInterceptors.push(interceptors.response);
   }
 
-  private prepareRequest(url: string, nordusConfigApi: NordusConfigApi) {
+  private prepareRequest(
+    url: string,
+    nordusConfigApi: NordusConfigApi,
+    abort: AbortTimeout
+  ) {
     try {
       const urlRequest = this.generateURL(url, nordusConfigApi);
       const body = this.getBody(nordusConfigApi);
       const request = new Request(urlRequest, {
         method: nordusConfigApi?.method,
         body: body,
+        signal: abort.signal,
       });
 
       this.setHeaders(nordusConfigApi, request);
@@ -67,11 +100,13 @@ export class NordusRequest {
 
   private async makeRequest<T = any>(
     request: Request,
-    nordusConfigApi: NordusConfigApi
+    nordusConfigApi: NordusConfigApi,
+    abort: AbortTimeout
   ) {
+    const timeoutId = abort.start();
     try {
       const response = (await fetch(request)) as NordusResponse<T>;
-
+      clearTimeout(timeoutId);
       if (!response.ok) throw new Error(response.statusText);
 
       response.data = await this.getResponseFromType<T>(
@@ -83,6 +118,7 @@ export class NordusRequest {
       );
       return response;
     } catch (error) {
+      clearTimeout(timeoutId);
       this.responseInterceptors.forEach((interceptor) => interceptor(error));
       throw error;
     }

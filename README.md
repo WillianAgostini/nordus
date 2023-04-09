@@ -123,6 +123,19 @@ const instance = create(
 );
 ```
 
+You can add timeout on each request.
+
+```js
+try {
+  await get("http://localhost:5000/todos/1", {
+    timeout: 100,
+  });
+  expect(true).toBeFalsy();
+} catch (error) {
+  expect(error.message).toEqual("The operation was aborted. ");
+}
+```
+
 ## License
 
 [MIT](LICENSE)
