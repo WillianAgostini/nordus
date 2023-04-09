@@ -2,9 +2,13 @@ export type Method = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 };
 
+type InterceptorRequest = (err: Error, request: Request) => void;
+
+type InterceptorResponse = (err: Error, response: NordusResponse) => void;
+
 interface Interceptors {
-  request?: (err: Error, request: Request) => void;
-  response?: (err: Error, response: NordusResponse) => void;
+  request?: InterceptorRequest;
+  response?: InterceptorResponse;
 }
 
 export interface NordusConfig {
@@ -33,8 +37,8 @@ type AbortTimeout = {
 };
 
 export class NordusRequest {
-  readonly requestInterceptors: any[] = [];
-  readonly responseInterceptors: any[] = [];
+  readonly interceptorRequest: InterceptorRequest[] = [];
+  readonly interceptorsResponse: InterceptorResponse[] = [];
 
   async request<T = any>(url: string, nordusConfigApi: NordusConfigApi) {
     if (nordusConfigApi.interceptors) {
@@ -42,7 +46,7 @@ export class NordusRequest {
     }
 
     const abort = this.createAbortTimeout(nordusConfigApi);
-    const request = this.prepareRequest(url, nordusConfigApi, abort);
+    const request = await this.prepareRequest(url, nordusConfigApi, abort);
     return await this.makeRequest<T>(request, nordusConfigApi, abort);
   }
 
@@ -65,12 +69,12 @@ export class NordusRequest {
 
   registerInterceptors(interceptors: Interceptors) {
     if (interceptors.request)
-      this.requestInterceptors.push(interceptors.request);
+      this.interceptorRequest.push(interceptors.request);
     if (interceptors.response)
-      this.responseInterceptors.push(interceptors.response);
+      this.interceptorsResponse.push(interceptors.response);
   }
 
-  private prepareRequest(
+  private async prepareRequest(
     url: string,
     nordusConfigApi: NordusConfigApi,
     abort: AbortTimeout
@@ -86,14 +90,10 @@ export class NordusRequest {
 
       this.setHeaders(nordusConfigApi, request);
       this.setRequestType(request, nordusConfigApi);
-      this.requestInterceptors.forEach((interceptor) =>
-        interceptor(null, request)
-      );
+      await this.executeLoopAsync(this.interceptorRequest, null, request);
       return request;
-    } catch (error) {
-      this.requestInterceptors.forEach((interceptor) =>
-        interceptor(error, null)
-      );
+    } catch (error: any) {
+      await this.executeLoopAsync(this.interceptorRequest, error, null);
       throw error;
     }
   }
@@ -113,14 +113,18 @@ export class NordusRequest {
         response,
         nordusConfigApi
       );
-      this.responseInterceptors.forEach((interceptor) =>
-        interceptor(null, response)
-      );
+      await this.executeLoopAsync(this.interceptorsResponse, null, response);
       return response;
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
-      this.responseInterceptors.forEach((interceptor) => interceptor(error));
+      await this.executeLoopAsync(this.interceptorsResponse, error, null);
       throw error;
+    }
+  }
+
+  private async executeLoopAsync(interceptors: any[], err: any, reason: any) {
+    for (const interceptor of interceptors) {
+      await interceptor(err, reason);
     }
   }
 

@@ -45,7 +45,7 @@ describe("interceptors", () => {
         },
       },
     });
-    instance.get("/todos/1");
+    await instance.get("/todos/1");
     const lastCall = fetchMock?.mock?.lastCall?.at(0) as Request;
     expect(lastCall?.headers.get("access_token")).toEqual("Bearer 123");
   });
