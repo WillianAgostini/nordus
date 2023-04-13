@@ -8,9 +8,10 @@
     "/dist"
   ],
   "scripts": {
-    "build": "npm run format && tsc",
+    "build": "npm run check && tsc",
     "test": "jest",
-    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "check": "prettier --ignore-path .gitignore -c \"**/*.+(js|ts|json)\""
   },
   "author": "Willian Carlos Agostini",
   "devDependencies": {
