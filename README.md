@@ -12,7 +12,7 @@ Using npm:
 $ npm install --save nordus
 ```
 
-Once the package is installed, you can import the library using `import` or `require` approach:
+Once the package is installed, you can import the library using `import` or `require` approach:  
 
 ```js
 import nordus, { get, post } from 'nordus';
