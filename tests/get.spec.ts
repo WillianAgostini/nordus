@@ -67,7 +67,7 @@ describe("interceptors", () => {
         test: "test",
       })
     );
-    const response = await get("http://localhost:5000");
+    const response = await get<{ test: string }>("http://localhost:5000");
 
     expect(response.data).toEqual({
       test: "test",

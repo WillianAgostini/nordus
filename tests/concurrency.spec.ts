@@ -24,11 +24,14 @@ describe("concurrency", () => {
       responseType: "json",
     });
 
-    const instanceGet = await instance.get("todos/1");
-    const instancePost = await instance.post("todos/1", {});
-    const instancePut = await instance.put("todos/1", {});
-    const instancePatch = await instance.patch("todos/1", {});
-    const instanceDel = await instance.del("todos/1");
+    const [instanceGet, instancePost, instancePut, instancePatch, instanceDel] =
+      await Promise.all([
+        instance.get("todos/1"),
+        instance.post("todos/1", {}),
+        instance.put("todos/1", {}),
+        instance.patch("todos/1", {}),
+        instance.del("todos/1"),
+      ]);
 
     expect(instanceGet.data).toEqual({ method: "get" });
     expect(instancePost.data).toEqual({ method: "post" });

@@ -134,13 +134,9 @@ export class NordusRequest {
   }
 
   private getBody(nordusConfig: NordusConfigApi) {
-    if (!nordusConfig?.body) return;
-
     switch (nordusConfig.responseType) {
       case "json":
         return JSON.stringify(nordusConfig.body);
-      case "text":
-        return nordusConfig.body.toString();
       default:
         return nordusConfig.body;
     }

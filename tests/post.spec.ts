@@ -12,11 +12,12 @@ describe("interceptors", () => {
         test: "test",
       })
     );
-    const response = await post("http://localhost:5000", {
-      body: {
+    const response = await post<{ test: string }, { test: any }>(
+      "http://localhost:5000",
+      {
         test: "test",
-      },
-    });
+      }
+    );
 
     expect(response.data).toEqual({
       test: "test",
@@ -53,5 +54,15 @@ describe("interceptors", () => {
     expect(response.data).toEqual({
       test: "test",
     });
+  });
+
+  it("success post with null body", async () => {
+    fetchMock.mockResponseOnce("plan text");
+
+    const response = await post("http://localhost:5000", null, {
+      responseType: "text",
+    });
+
+    expect(response.data).toEqual("plan text");
   });
 });
