@@ -1,5 +1,6 @@
 import { create, post } from "../src";
 import { FetchMock } from "jest-fetch-mock";
+import { InterceptorRequest, InterceptorResponse } from "../src/request";
 
 describe("interceptors", () => {
   const fetchMock = fetch as FetchMock;
@@ -114,10 +115,10 @@ describe("interceptors", () => {
     });
 
     let textInterceptor = "";
-    const firstInterceptor = () => {
+    const firstInterceptor: InterceptorRequest = () => {
       textInterceptor += "1";
     };
-    const secondInterceptor = () => {
+    const secondInterceptor: InterceptorRequest = () => {
       textInterceptor += "2";
     };
 
@@ -137,10 +138,10 @@ describe("interceptors", () => {
     });
 
     let textInterceptor = "";
-    const firstInterceptor = () => {
+    const firstInterceptor: InterceptorResponse = () => {
       textInterceptor += "1";
     };
-    const secondInterceptor = () => {
+    const secondInterceptor: InterceptorResponse = () => {
       textInterceptor += "2";
     };
 

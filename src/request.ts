@@ -1,14 +1,19 @@
+import { append } from "./utils";
+
 export type Method = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 };
 
-type InterceptorRequest = (err: Error, request: Request) => void;
+export type InterceptorRequest = (err: Error, request: Request) => void;
 
-type InterceptorResponse = (err: Error, response: NordusResponse) => void;
+export type InterceptorResponse = (
+  err: Error,
+  response: NordusResponse
+) => void;
 
 interface Interceptors {
-  request?: InterceptorRequest;
-  response?: InterceptorResponse;
+  request?: InterceptorRequest | InterceptorRequest[];
+  response?: InterceptorResponse | InterceptorResponse[];
 }
 
 export interface NordusConfig extends RequestInit {
@@ -69,9 +74,9 @@ export class NordusRequest {
 
   registerInterceptors(interceptors: Interceptors) {
     if (interceptors.request)
-      this.interceptorRequest.push(interceptors.request);
+      append(this.interceptorRequest, interceptors.request);
     if (interceptors.response)
-      this.interceptorsResponse.push(interceptors.response);
+      append(this.interceptorsResponse, interceptors.response);
   }
 
   private async prepareRequest(
