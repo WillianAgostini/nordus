@@ -2,6 +2,10 @@
 
 Promise based HTTP client for the node.js using Fetch
 
+## Compatibility
+
+- Node.js v18+
+
 ## Installing
 
 ### Package manager
