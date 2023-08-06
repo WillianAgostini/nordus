@@ -154,4 +154,91 @@ describe("interceptors", () => {
 
     instance.get("/todos/1").catch(() => expect(textInterceptor).toEqual("12"));
   });
+
+  it("shoud allow to add many interceptors for response", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorResponse = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorResponse = () => {
+      textInterceptor += "2";
+    };
+    const thirdInterceptor: InterceptorResponse = () => {
+      textInterceptor += "3";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        response: [firstInterceptor, secondInterceptor],
+      },
+    });
+
+    await instance.get("/todos/1", {
+      interceptors: {
+        response: thirdInterceptor,
+      },
+    });
+    expect(textInterceptor).toEqual("123");
+  });
+
+  it("shoud allow to add many interceptors for request", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorRequest = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorRequest = () => {
+      textInterceptor += "2";
+    };
+    const thirdInterceptor: InterceptorRequest = () => {
+      textInterceptor += "3";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        request: [firstInterceptor, secondInterceptor],
+      },
+    });
+
+    await instance.get("/todos/1", {
+      interceptors: {
+        request: thirdInterceptor,
+      },
+    });
+    expect(textInterceptor).toEqual("123");
+  });
+
+  it("shoud allow to add many interceptors for request and response", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorRequest = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorRequest = () => {
+      textInterceptor += "2";
+    };
+    const thirdInterceptor: InterceptorResponse = () => {
+      textInterceptor += "3";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        request: [firstInterceptor, secondInterceptor],
+      },
+    });
+
+    await instance.get("/todos/1", {
+      interceptors: {
+        response: thirdInterceptor,
+      },
+    });
+    expect(textInterceptor).toEqual("123");
+  });
 });
