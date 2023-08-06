@@ -34,8 +34,8 @@
     "type": "git",
     "url": "git+https://github.com/WillianAgostini/nordus.git"
   },
-  "engines" : {
-    "node" : ">=18.0.0"
+  "engines": {
+    "node": ">=18.0.0"
   },
   "keywords": [
     "node",
