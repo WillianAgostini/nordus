@@ -107,4 +107,50 @@ describe("interceptors", () => {
     });
     instance.get("/todos/1").catch(() => expect(hasResolved).toEqual(true));
   });
+
+  it("shoud allow to add many interceptors for request", async () => {
+    fetchMock.mockResponseOnce("", {
+      status: 400,
+    });
+
+    let textInterceptor = "";
+    const firstInterceptor = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor = () => {
+      textInterceptor += "2";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        request: [firstInterceptor, secondInterceptor],
+      },
+    });
+
+    instance.get("/todos/1").catch(() => expect(textInterceptor).toEqual("12"));
+  });
+
+  it("shoud allow to add many interceptors for response", async () => {
+    fetchMock.mockResponseOnce("", {
+      status: 200,
+    });
+
+    let textInterceptor = "";
+    const firstInterceptor = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor = () => {
+      textInterceptor += "2";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        response: [firstInterceptor, secondInterceptor],
+      },
+    });
+
+    instance.get("/todos/1").catch(() => expect(textInterceptor).toEqual("12"));
+  });
 });
