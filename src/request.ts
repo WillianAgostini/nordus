@@ -8,7 +8,7 @@ export type InterceptorRequest = (err: Error, request: Request) => void;
 
 export type InterceptorResponse = (
   err: Error,
-  response: NordusResponse
+  response: NordusResponse,
 ) => void;
 
 interface Interceptors {
@@ -82,7 +82,7 @@ export class NordusRequest {
   private async prepareRequest(
     url: string,
     nordusConfigApi: NordusConfigApi,
-    abort: AbortTimeout
+    abort: AbortTimeout,
   ) {
     try {
       const urlRequest = this.generateURL(url, nordusConfigApi);
@@ -111,7 +111,7 @@ export class NordusRequest {
   private async makeRequest<T = any>(
     request: Request,
     nordusConfigApi: NordusConfigApi,
-    abort: AbortTimeout
+    abort: AbortTimeout,
   ) {
     const timeoutId = abort.start();
     try {
@@ -121,7 +121,7 @@ export class NordusRequest {
 
       response.data = await this.getResponseFromType<T>(
         response,
-        nordusConfigApi
+        nordusConfigApi,
       );
       await this.executeLoopAsync(this.interceptorsResponse, null, response);
       return response;
@@ -186,7 +186,7 @@ export class NordusRequest {
 
   private async getResponseFromType<T = any>(
     response: Response,
-    nordusConfigApi: NordusConfigApi
+    nordusConfigApi: NordusConfigApi,
   ) {
     switch (nordusConfigApi.responseType) {
       case "json":

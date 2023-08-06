@@ -10,8 +10,8 @@ describe("timeout", () => {
     fetchMock.mockResponseOnce(
       () =>
         new Promise((resolve) =>
-          setTimeout(() => resolve(JSON.stringify({ body: "ok" })), 300)
-        )
+          setTimeout(() => resolve(JSON.stringify({ body: "ok" })), 300),
+        ),
     );
 
     try {

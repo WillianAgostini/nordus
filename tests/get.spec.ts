@@ -50,7 +50,7 @@ describe("interceptors", () => {
     fetchMock.mockResponseOnce(
       JSON.stringify({
         test: "test",
-      })
+      }),
     );
     const response = await get("http://localhost:5000", {
       responseType: "json",
@@ -65,7 +65,7 @@ describe("interceptors", () => {
     fetchMock.mockResponseOnce(
       JSON.stringify({
         test: "test",
-      })
+      }),
     );
     const response = await get<{ test: string }>("http://localhost:5000");
 
@@ -81,7 +81,7 @@ describe("interceptors", () => {
       }),
       {
         status: 400,
-      }
+      },
     );
     try {
       await get("http://localhost:5000");

@@ -58,7 +58,7 @@ describe("interceptors", () => {
       }),
       {
         status: 400,
-      }
+      },
     );
     try {
       await post(
@@ -74,7 +74,7 @@ describe("interceptors", () => {
               expect(err.message).toEqual("Bad Request");
             },
           },
-        }
+        },
       );
     } catch (error: any) {
       expect(error.message).toEqual("Bad Request");

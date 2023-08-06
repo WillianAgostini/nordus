@@ -10,13 +10,13 @@ describe("interceptors", () => {
     fetchMock.mockResponseOnce(
       JSON.stringify({
         test: "test",
-      })
+      }),
     );
     const response = await post<{ test: string }, { test: any }>(
       "http://localhost:5000",
       {
         test: "test",
-      }
+      },
     );
 
     expect(response.data).toEqual({
@@ -28,7 +28,7 @@ describe("interceptors", () => {
     fetchMock.mockResponseOnce(
       JSON.stringify({
         test: "test",
-      })
+      }),
     );
     const response = await post("http://localhost:5000", {
       body: null,
@@ -43,7 +43,7 @@ describe("interceptors", () => {
     fetchMock.mockResponseOnce(
       JSON.stringify({
         test: "test",
-      })
+      }),
     );
     const response = await post("http://localhost:5000", {
       body: {

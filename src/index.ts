@@ -17,7 +17,7 @@ export async function get<T = any>(url: string, nordusConfig?: NordusConfig) {
 export async function post<T = any, D = any>(
   url: string,
   body: D,
-  nordusConfig?: NordusConfig
+  nordusConfig?: NordusConfig,
 ) {
   const { nordusRequest, nordusConfigApi } = createRequest(nordusConfig);
 
@@ -29,7 +29,7 @@ export async function post<T = any, D = any>(
 export async function put<T = any, D = any>(
   url: string,
   body: D,
-  nordusConfig?: NordusConfig
+  nordusConfig?: NordusConfig,
 ) {
   const { nordusRequest, nordusConfigApi } = createRequest(nordusConfig);
 
@@ -41,7 +41,7 @@ export async function put<T = any, D = any>(
 export async function patch<T = any, D = any>(
   url: string,
   body: D,
-  nordusConfig?: NordusConfig
+  nordusConfig?: NordusConfig,
 ) {
   const { nordusRequest, nordusConfigApi } = createRequest(nordusConfig);
 
@@ -65,7 +65,7 @@ function createRequest(nordusConfig?: NordusConfig) {
 
 function mergeConfig(
   nordusConfig?: NordusConfig,
-  nordusConfig2?: NordusConfig
+  nordusConfig2?: NordusConfig,
 ): NordusConfig {
   const interceptorsRequest: InterceptorRequest[] = [];
   if (nordusConfig?.interceptors?.request)
@@ -96,17 +96,17 @@ export function create(nordusConf?: NordusConfig) {
     post: <T = any, D = any>(
       url: string,
       body: D,
-      nordusConfig?: NordusConfig
+      nordusConfig?: NordusConfig,
     ) => post<T, D>(url, body, mergeConfig(nordusConf, nordusConfig)),
     put: <T = any, D = any>(
       url: string,
       body: D,
-      nordusConfig?: NordusConfig
+      nordusConfig?: NordusConfig,
     ) => put<T, D>(url, body, mergeConfig(nordusConf, nordusConfig)),
     patch: <T = any, D = any>(
       url: string,
       body: D,
-      nordusConfig?: NordusConfig
+      nordusConfig?: NordusConfig,
     ) => patch<T, D>(url, body, mergeConfig(nordusConf, nordusConfig)),
     del: <T = any>(url: string, nordusConfig?: NordusConfig) =>
       del<T>(url, mergeConfig(nordusConf, nordusConfig)),
