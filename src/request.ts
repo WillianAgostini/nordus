@@ -83,12 +83,12 @@ export class NordusRequest {
       const urlRequest = this.generateURL(url, nordusConfigApi);
       const body = this.getBody(nordusConfigApi);
       const init = {
-        ...nordusConfigApi,
         ...{
           method: nordusConfigApi?.method,
           body: body,
           signal: abort.signal,
         },
+        ...nordusConfigApi,
       };
 
       const request = new Request(urlRequest, init);
