@@ -1,9 +1,11 @@
 import {
+  InterceptorRequest,
+  InterceptorResponse,
   NordusConfig,
   NordusConfigApi,
   NordusRequest,
-  NordusResponse,
 } from "./request";
+import { append } from "./utils";
 
 export async function get<T = any>(url: string, nordusConfig?: NordusConfig) {
   const { nordusRequest, nordusConfigApi } = createRequest(nordusConfig);
@@ -61,27 +63,53 @@ function createRequest(nordusConfig?: NordusConfig) {
   return { nordusRequest, nordusConfigApi };
 }
 
+function mergeConfig(
+  nordusConfig?: NordusConfig,
+  nordusConfig2?: NordusConfig
+): NordusConfig {
+  const interceptorsRequest: InterceptorRequest[] = [];
+  if (nordusConfig?.interceptors?.request)
+    append(interceptorsRequest, nordusConfig.interceptors.request);
+  if (nordusConfig2?.interceptors?.request)
+    append(interceptorsRequest, nordusConfig2.interceptors.request);
+
+  const interceptorsResponse: InterceptorResponse[] = [];
+  if (nordusConfig?.interceptors?.response)
+    append(interceptorsResponse, nordusConfig.interceptors.response);
+  if (nordusConfig2?.interceptors?.response)
+    append(interceptorsResponse, nordusConfig2.interceptors.response);
+
+  return {
+    ...nordusConfig,
+    ...nordusConfig2,
+    interceptors: {
+      request: interceptorsRequest,
+      response: interceptorsResponse,
+    },
+  };
+}
+
 export function create(nordusConf?: NordusConfig) {
   return {
     get: <T = any>(url: string, nordusConfig?: NordusConfig) =>
-      get<T>(url, { ...nordusConfig, ...nordusConf }),
+      get<T>(url, mergeConfig(nordusConf, nordusConfig)),
     post: <T = any, D = any>(
       url: string,
       body: D,
       nordusConfig?: NordusConfig
-    ) => post<T, D>(url, body, { ...nordusConfig, ...nordusConf }),
+    ) => post<T, D>(url, body, mergeConfig(nordusConf, nordusConfig)),
     put: <T = any, D = any>(
       url: string,
       body: D,
       nordusConfig?: NordusConfig
-    ) => put<T, D>(url, body, { ...nordusConfig, ...nordusConf }),
+    ) => put<T, D>(url, body, mergeConfig(nordusConf, nordusConfig)),
     patch: <T = any, D = any>(
       url: string,
       body: D,
       nordusConfig?: NordusConfig
-    ) => patch<T, D>(url, body, { ...nordusConfig, ...nordusConf }),
+    ) => patch<T, D>(url, body, mergeConfig(nordusConf, nordusConfig)),
     del: <T = any>(url: string, nordusConfig?: NordusConfig) =>
-      del<T>(url, { ...nordusConfig, ...nordusConf }),
+      del<T>(url, mergeConfig(nordusConf, nordusConfig)),
   };
 }
 
