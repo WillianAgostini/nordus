@@ -12,7 +12,7 @@ describe("concurrency", () => {
       JSON.stringify({ method: "post" }),
       JSON.stringify({ method: "put" }),
       JSON.stringify({ method: "patch" }),
-      JSON.stringify({ method: "del" })
+      JSON.stringify({ method: "del" }),
     );
 
     const instance = create({

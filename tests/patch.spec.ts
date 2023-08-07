@@ -10,7 +10,7 @@ describe("interceptors", () => {
     fetchMock.mockResponseOnce(
       JSON.stringify({
         test: "test",
-      })
+      }),
     );
     const response = await patch("http://localhost:5000", {
       body: {
