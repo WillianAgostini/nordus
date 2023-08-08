@@ -30,7 +30,14 @@ export interface NordusConfig extends RequestInit {
   timeout?: number;
 }
 
-export interface NordusConfigApi extends NordusConfig {}
+interface InterceptorsApi {
+  request: InterceptorRequest[];
+  response: InterceptorResponse[];
+}
+
+export interface NordusConfigApi extends NordusConfig {
+  interceptors: InterceptorsApi;
+}
 
 export interface NordusResponse<T = any> extends Response {
   data?: T;

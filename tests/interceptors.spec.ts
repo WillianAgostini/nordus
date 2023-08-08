@@ -241,4 +241,148 @@ describe("interceptors", () => {
     });
     expect(textInterceptor).toEqual("123");
   });
+
+  it("shoud allow to add interceptors by use and parameter for request", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorRequest = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorRequest = () => {
+      textInterceptor += "2";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+    });
+    instance.interceptors.request.use(firstInterceptor);
+    await instance.get("/todos/1", {
+      interceptors: {
+        request: secondInterceptor,
+      },
+    });
+    expect(textInterceptor).toEqual("12");
+  });
+
+  it("shoud allow to add interceptors by use and parameter for request", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorRequest = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorRequest = () => {
+      textInterceptor += "2";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+    });
+    const id = instance.interceptors.request.use(firstInterceptor);
+    instance.interceptors.request.eject(id);
+
+    await instance.get("/todos/1", {
+      interceptors: {
+        request: secondInterceptor,
+      },
+    });
+    expect(textInterceptor).toEqual("2");
+  });
+
+  it("shoud allow to clear interceptors for request", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorRequest = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorRequest = () => {
+      textInterceptor += "2";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        request: [firstInterceptor],
+      },
+    });
+    instance.interceptors.request.use(secondInterceptor);
+    instance.interceptors.request.clear();
+
+    await instance.get("/todos/1");
+    expect(textInterceptor).toEqual("");
+  });
+
+  it("shoud allow to add interceptors by use and parameter for response", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorRequest = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorRequest = () => {
+      textInterceptor += "2";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+    });
+    instance.interceptors.request.use(firstInterceptor);
+    await instance.get("/todos/1", {
+      interceptors: {
+        request: secondInterceptor,
+      },
+    });
+    expect(textInterceptor).toEqual("12");
+  });
+
+  it("shoud allow to add interceptors by use and parameter for response", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorRequest = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorRequest = () => {
+      textInterceptor += "2";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+    });
+    const id = instance.interceptors.request.use(firstInterceptor);
+    instance.interceptors.request.eject(id);
+
+    await instance.get("/todos/1", {
+      interceptors: {
+        request: secondInterceptor,
+      },
+    });
+    expect(textInterceptor).toEqual("2");
+  });
+
+  it("shoud allow to clear interceptors for response", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorRequest = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorRequest = () => {
+      textInterceptor += "2";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        request: [firstInterceptor],
+      },
+    });
+    instance.interceptors.request.use(secondInterceptor);
+    instance.interceptors.request.clear();
+
+    await instance.get("/todos/1");
+    expect(textInterceptor).toEqual("");
+  });
 });
