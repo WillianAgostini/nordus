@@ -1,4 +1,4 @@
-import { get, post } from "../src";
+import { post } from "../src";
 import { FetchMock } from "jest-fetch-mock";
 
 describe("interceptors", () => {
@@ -12,7 +12,7 @@ describe("interceptors", () => {
         test: "test",
       }),
     );
-    const response = await post<{ test: string }, { test: any }>(
+    const response = await post<{ test: string }, { test: string }>(
       "http://localhost:5000",
       {
         test: "test",
