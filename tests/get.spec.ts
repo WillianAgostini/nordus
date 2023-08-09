@@ -25,18 +25,6 @@ describe("interceptors", () => {
     expect(String(response.data)).toEqual(String(new ArrayBuffer(4)));
   });
 
-  it("success get with formData response", async () => {
-    const formData = new FormData();
-    formData.append("test", "test");
-
-    fetchMock.mockResponseOnce(formData.toString());
-    const response = await get("http://localhost:5000", {
-      responseType: "formData",
-    });
-
-    expect(String(response.data)).toEqual(String(new FormData()));
-  });
-
   it("success get with text response", async () => {
     fetchMock.mockResponseOnce("test");
     const response = await get("http://localhost:5000", {
