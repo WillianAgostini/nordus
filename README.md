@@ -136,6 +136,64 @@ try {
 }
 ```
 
+## Interceptors
+
+You can intercept requests or responses before they are handled by `then` or `catch`.
+
+```js
+// Add a request and response interceptor
+await get("http://localhost:5000/todos/1", {
+  interceptors: {
+    request: async (err, request) => {
+      // Do something before request is sent
+      return request;
+    },
+    response: async (err, response) => {
+      // Do something with response data
+      return response;
+    }
+  },
+});
+```
+
+You can add interceptors to a custom instance of nordus.
+
+```js
+const instance = nordus.create();
+instance.interceptors.request.use(() => {/*...*/});
+```
+
+If you need to remove an interceptor later you can.
+
+```js
+const myInterceptor = instance.interceptors.request.use(() => {/*...*/});
+instance.interceptors.request.eject(myInterceptor);
+```
+
+You can also clear all interceptors for requests or responses.
+```js
+const instance = nordus.create();
+instance.interceptors.request.use(() => {/*...*/});
+instance.interceptors.request.clear(); // Removes interceptors from requests
+instance.interceptors.response.use(() => {/*...*/});
+instance.interceptors.response.clear(); // Removes interceptors from responses
+```
+
+### Multiple Interceptors
+
+Given you add multiple response interceptors
+and when the response was fulfilled
+- then each interceptor is executed
+- then they are executed in the order they were added
+- then only the last interceptor's result is returned
+- then every interceptor receives the result of its predecessor
+- and when the fulfillment-interceptor throws
+    - then the following fulfillment-interceptor is not called
+    - then the following rejection-interceptor is called
+    - once caught, another following fulfill-interceptor is called again (just like in a promise chain).
+
+Read [the interceptor tests](./tests/interceptors.spec.ts) for seeing all this in code.
+
 ## License
 
 [MIT](LICENSE)

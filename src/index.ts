@@ -1,9 +1,16 @@
 import {
+  NordusInterceptorManager,
+  createInterceptors,
+  requestInterptorsManager,
+  responseInterceptorsManager,
+} from "./interceptors";
+import {
   InterceptorRequest,
   InterceptorResponse,
   NordusConfig,
   NordusConfigApi,
   NordusRequest,
+  NordusResponse,
 } from "./request";
 import { append } from "./utils";
 
@@ -89,34 +96,71 @@ function mergeConfig(
   };
 }
 
-export function create(nordusConf?: NordusConfig) {
+interface Nordus {
+  interceptors: {
+    request: NordusInterceptorManager<InterceptorRequest>;
+    response: NordusInterceptorManager<InterceptorResponse>;
+  };
+  get: <T = any>(
+    url: string,
+    nordusConfig?: NordusConfig,
+  ) => Promise<NordusResponse<T>>;
+  post: <T = any, D = any>(
+    url: string,
+    body: D,
+    nordusConfig?: NordusConfig,
+  ) => Promise<NordusResponse<T>>;
+  put: <T = any, D = any>(
+    url: string,
+    body: D,
+    nordusConfig?: NordusConfig,
+  ) => Promise<NordusResponse<T>>;
+  patch: <T = any, D = any>(
+    url: string,
+    body: D,
+    nordusConfig?: NordusConfig,
+  ) => Promise<NordusResponse<T>>;
+  del: <T = any>(
+    url: string,
+    nordusConfig?: NordusConfig,
+  ) => Promise<NordusResponse<T>>;
+}
+
+export function create(nordusConfig?: NordusConfig) {
+  const nordusConfigApi = getDefaultConfig(nordusConfig);
   return {
     get: <T = any>(url: string, nordusConfig?: NordusConfig) =>
-      get<T>(url, mergeConfig(nordusConf, nordusConfig)),
+      get<T>(url, mergeConfig(nordusConfigApi, nordusConfig)),
     post: <T = any, D = any>(
       url: string,
       body: D,
       nordusConfig?: NordusConfig,
-    ) => post<T, D>(url, body, mergeConfig(nordusConf, nordusConfig)),
+    ) => post<T, D>(url, body, mergeConfig(nordusConfigApi, nordusConfig)),
     put: <T = any, D = any>(
       url: string,
       body: D,
       nordusConfig?: NordusConfig,
-    ) => put<T, D>(url, body, mergeConfig(nordusConf, nordusConfig)),
+    ) => put<T, D>(url, body, mergeConfig(nordusConfigApi, nordusConfig)),
     patch: <T = any, D = any>(
       url: string,
       body: D,
       nordusConfig?: NordusConfig,
-    ) => patch<T, D>(url, body, mergeConfig(nordusConf, nordusConfig)),
+    ) => patch<T, D>(url, body, mergeConfig(nordusConfigApi, nordusConfig)),
     del: <T = any>(url: string, nordusConfig?: NordusConfig) =>
-      del<T>(url, mergeConfig(nordusConf, nordusConfig)),
-  };
+      del<T>(url, mergeConfig(nordusConfigApi, nordusConfig)),
+    interceptors: {
+      request: requestInterptorsManager(nordusConfigApi),
+      response: responseInterceptorsManager(nordusConfigApi),
+    },
+  } as Nordus;
 }
 
 function getDefaultConfig(nordusConfig?: NordusConfig) {
   if (!nordusConfig) nordusConfig = {};
 
   if (!nordusConfig.responseType) nordusConfig.responseType = "json";
+
+  createInterceptors(nordusConfig);
 
   return nordusConfig as NordusConfigApi;
 }

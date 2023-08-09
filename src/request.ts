@@ -30,7 +30,14 @@ export interface NordusConfig extends RequestInit {
   timeout?: number;
 }
 
-export interface NordusConfigApi extends NordusConfig {}
+interface InterceptorsApi {
+  request: InterceptorRequest[];
+  response: InterceptorResponse[];
+}
+
+export interface NordusConfigApi extends NordusConfig {
+  interceptors: InterceptorsApi;
+}
 
 export interface NordusResponse<T = any> extends Response {
   data?: T;
@@ -84,6 +91,7 @@ export class NordusRequest {
     nordusConfigApi: NordusConfigApi,
     abort: AbortTimeout,
   ) {
+    let error, request;
     try {
       const urlRequest = this.generateURL(url, nordusConfigApi);
       const body = this.getBody(nordusConfigApi);
@@ -96,15 +104,16 @@ export class NordusRequest {
         ...nordusConfigApi,
       };
 
-      const request = new Request(urlRequest, init);
+      request = new Request(urlRequest, init);
 
       this.setHeaders(nordusConfigApi, request);
       this.setRequestType(request, nordusConfigApi);
-      await this.executeLoopAsync(this.interceptorRequest, null, request);
-      return request;
-    } catch (error: any) {
-      await this.executeLoopAsync(this.interceptorRequest, error, null);
-      throw error;
+    } catch (err: any) {
+      error = err;
+    } finally {
+      await this.executeLoopAsync(this.interceptorRequest, error, request);
+      if (error) throw error;
+      return request!;
     }
   }
 
@@ -114,8 +123,9 @@ export class NordusRequest {
     abort: AbortTimeout,
   ) {
     const timeoutId = abort.start();
+    let error, response;
     try {
-      const response = (await fetch(request)) as NordusResponse<T>;
+      response = (await fetch(request)) as NordusResponse<T>;
       clearTimeout(timeoutId);
       if (!response.ok) throw new Error(response.statusText);
 
@@ -123,12 +133,13 @@ export class NordusRequest {
         response,
         nordusConfigApi,
       );
-      await this.executeLoopAsync(this.interceptorsResponse, null, response);
-      return response;
-    } catch (error: any) {
+    } catch (err: any) {
+      error = err;
       clearTimeout(timeoutId);
-      await this.executeLoopAsync(this.interceptorsResponse, error, null);
-      throw error;
+    } finally {
+      await this.executeLoopAsync(this.interceptorsResponse, error, response);
+      if (error) throw error;
+      return response!;
     }
   }
 
