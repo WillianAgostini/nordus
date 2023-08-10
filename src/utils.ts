@@ -13,10 +13,6 @@ export function randomUUID() {
   return crypto.randomUUID();
 }
 
-export function propertyOf<TObj>(name: keyof TObj) {
-  return name;
-}
-
 export function getValueByKey(key: string, obj: any) {
   const attr = key as keyof typeof obj;
   const __interceptorId = obj[attr];
