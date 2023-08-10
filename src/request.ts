@@ -52,7 +52,7 @@ export class NordusRequest {
   readonly interceptorRequest: InterceptorRequest[] = [];
   readonly interceptorsResponse: InterceptorResponse[] = [];
 
-  async request<T = any>(url: string, nordusConfigApi: NordusConfigApi) {
+  async request<T>(url: string, nordusConfigApi: NordusConfigApi) {
     if (nordusConfigApi.interceptors) {
       this.registerInterceptors(nordusConfigApi.interceptors);
     }
@@ -108,16 +108,16 @@ export class NordusRequest {
 
       this.setHeaders(nordusConfigApi, request);
       this.setRequestType(request, nordusConfigApi);
-    } catch (err: any) {
+    } catch (err) {
       error = err;
-    } finally {
-      await this.executeLoopAsync(this.interceptorRequest, error, request);
-      if (error) throw error;
-      return request!;
     }
+
+    await this.executeLoopAsync(this.interceptorRequest, error, request);
+    if (error) throw error;
+    return request!;
   }
 
-  private async makeRequest<T = any>(
+  private async makeRequest<T>(
     request: Request,
     nordusConfigApi: NordusConfigApi,
     abort: AbortTimeout,
@@ -133,14 +133,14 @@ export class NordusRequest {
         response,
         nordusConfigApi,
       );
-    } catch (err: any) {
+    } catch (err) {
       error = err;
       clearTimeout(timeoutId);
-    } finally {
-      await this.executeLoopAsync(this.interceptorsResponse, error, response);
-      if (error) throw error;
-      return response!;
     }
+
+    await this.executeLoopAsync(this.interceptorsResponse, error, response);
+    if (error) throw error;
+    return response!;
   }
 
   private async executeLoopAsync(interceptors: any[], err: any, reason: any) {
@@ -195,7 +195,7 @@ export class NordusRequest {
     }
   }
 
-  private async getResponseFromType<T = any>(
+  private async getResponseFromType<T>(
     response: Response,
     nordusConfigApi: NordusConfigApi,
   ) {

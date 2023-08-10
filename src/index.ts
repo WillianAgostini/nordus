@@ -14,14 +14,14 @@ import {
 } from "./request";
 import { append } from "./utils";
 
-export async function get<T = any>(url: string, nordusConfig?: NordusConfig) {
+export async function get<T>(url: string, nordusConfig?: NordusConfig) {
   const { nordusRequest, nordusConfigApi } = createRequest(nordusConfig);
 
   nordusConfigApi.method = "GET";
   return await nordusRequest.request<T>(url, nordusConfigApi);
 }
 
-export async function post<T = any, D = any>(
+export async function post<T, D>(
   url: string,
   body: D,
   nordusConfig?: NordusConfig,
@@ -33,7 +33,7 @@ export async function post<T = any, D = any>(
   return await nordusRequest.request<T>(url, nordusConfigApi);
 }
 
-export async function put<T = any, D = any>(
+export async function put<T, D>(
   url: string,
   body: D,
   nordusConfig?: NordusConfig,
@@ -45,7 +45,7 @@ export async function put<T = any, D = any>(
   return await nordusRequest.request<T>(url, nordusConfigApi);
 }
 
-export async function patch<T = any, D = any>(
+export async function patch<T, D>(
   url: string,
   body: D,
   nordusConfig?: NordusConfig,
@@ -57,7 +57,7 @@ export async function patch<T = any, D = any>(
   return await nordusRequest.request<T>(url, nordusConfigApi);
 }
 
-export async function del<T = any>(url: string, nordusConfig?: NordusConfig) {
+export async function del<T>(url: string, nordusConfig?: NordusConfig) {
   const { nordusRequest, nordusConfigApi } = createRequest(nordusConfig);
 
   nordusConfigApi.method = "DELETE";
@@ -101,26 +101,26 @@ interface Nordus {
     request: NordusInterceptorManager<InterceptorRequest>;
     response: NordusInterceptorManager<InterceptorResponse>;
   };
-  get: <T = any>(
+  get: <T>(
     url: string,
     nordusConfig?: NordusConfig,
   ) => Promise<NordusResponse<T>>;
-  post: <T = any, D = any>(
-    url: string,
-    body: D,
-    nordusConfig?: NordusConfig,
-  ) => Promise<NordusResponse<T>>;
-  put: <T = any, D = any>(
+  post: <T, D>(
     url: string,
     body: D,
     nordusConfig?: NordusConfig,
   ) => Promise<NordusResponse<T>>;
-  patch: <T = any, D = any>(
+  put: <T, D>(
     url: string,
     body: D,
     nordusConfig?: NordusConfig,
   ) => Promise<NordusResponse<T>>;
-  del: <T = any>(
+  patch: <T, D>(
+    url: string,
+    body: D,
+    nordusConfig?: NordusConfig,
+  ) => Promise<NordusResponse<T>>;
+  del: <T>(
     url: string,
     nordusConfig?: NordusConfig,
   ) => Promise<NordusResponse<T>>;
@@ -129,24 +129,15 @@ interface Nordus {
 export function create(nordusConfig?: NordusConfig) {
   const nordusConfigApi = getDefaultConfig(nordusConfig);
   return {
-    get: <T = any>(url: string, nordusConfig?: NordusConfig) =>
+    get: <T>(url: string, nordusConfig?: NordusConfig) =>
       get<T>(url, mergeConfig(nordusConfigApi, nordusConfig)),
-    post: <T = any, D = any>(
-      url: string,
-      body: D,
-      nordusConfig?: NordusConfig,
-    ) => post<T, D>(url, body, mergeConfig(nordusConfigApi, nordusConfig)),
-    put: <T = any, D = any>(
-      url: string,
-      body: D,
-      nordusConfig?: NordusConfig,
-    ) => put<T, D>(url, body, mergeConfig(nordusConfigApi, nordusConfig)),
-    patch: <T = any, D = any>(
-      url: string,
-      body: D,
-      nordusConfig?: NordusConfig,
-    ) => patch<T, D>(url, body, mergeConfig(nordusConfigApi, nordusConfig)),
-    del: <T = any>(url: string, nordusConfig?: NordusConfig) =>
+    post: <T, D>(url: string, body: D, nordusConfig?: NordusConfig) =>
+      post<T, D>(url, body, mergeConfig(nordusConfigApi, nordusConfig)),
+    put: <T, D>(url: string, body: D, nordusConfig?: NordusConfig) =>
+      put<T, D>(url, body, mergeConfig(nordusConfigApi, nordusConfig)),
+    patch: <T, D>(url: string, body: D, nordusConfig?: NordusConfig) =>
+      patch<T, D>(url, body, mergeConfig(nordusConfigApi, nordusConfig)),
+    del: <T>(url: string, nordusConfig?: NordusConfig) =>
       del<T>(url, mergeConfig(nordusConfigApi, nordusConfig)),
     interceptors: {
       request: requestInterptorsManager(nordusConfigApi),

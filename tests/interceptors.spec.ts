@@ -19,12 +19,12 @@ describe("interceptors", () => {
       },
       responseType: "json",
       interceptors: {
-        request: (err, request) => {
+        request: (err) => {
           if (err) {
             expect(true).toEqual(false);
           }
         },
-        response: (err, response) => {
+        response: (err) => {
           if (err) {
             expect(true).toEqual(false);
           }
@@ -71,13 +71,13 @@ describe("interceptors", () => {
         },
         {
           interceptors: {
-            response: (err, response) => {
+            response: (err) => {
               expect(err.message).toEqual("Bad Request");
             },
           },
         },
       );
-    } catch (error: any) {
+    } catch (error) {
       expect(error.message).toEqual("Bad Request");
     }
   });
@@ -89,7 +89,7 @@ describe("interceptors", () => {
     const instance = create({
       baseURL: "http://localhost:5000",
       interceptors: {
-        request: (err, request) => (hasResolved = true),
+        request: () => (hasResolved = true),
       },
     });
     instance.get("/todos/1").then(() => expect(hasResolved).toEqual(true));
@@ -104,7 +104,7 @@ describe("interceptors", () => {
     const instance = create({
       baseURL: "http://localhost:5000",
       interceptors: {
-        response: (err, request) => (hasResolved = true),
+        response: () => (hasResolved = true),
       },
     });
     instance.get("/todos/1").catch(() => expect(hasResolved).toEqual(true));

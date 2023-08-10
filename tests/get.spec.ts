@@ -85,7 +85,7 @@ describe("interceptors", () => {
     );
     try {
       await get("http://localhost:5000");
-    } catch (error: any) {
+    } catch (error) {
       expect(error.message).toEqual("Bad Request");
     }
   });

@@ -14,7 +14,7 @@ describe("request", () => {
       await nordus.request("/localhost", {
         method: "POST",
       });
-    } catch (error: any) {
+    } catch (error) {
       expect(error?.message).toEqual("Invalid URL");
     }
   });
@@ -28,7 +28,7 @@ describe("request", () => {
         test: "test",
       },
     });
-    const lastCall = fetchMock?.mock?.lastCall?.at(0) as any;
+    const lastCall = fetchMock?.mock?.lastCall?.at(0) as Request;
     expect(lastCall?.url).toEqual("http://localhost:5000/?test=test");
   });
 });
