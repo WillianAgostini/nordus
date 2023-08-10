@@ -2,6 +2,8 @@ import { create, get, post } from "../src";
 import { FetchMock } from "jest-fetch-mock";
 import { InterceptorRequest, InterceptorResponse } from "../src/request";
 import { delay } from "./helpers/utils";
+import { addInterceptor, removeInterceptor } from "../src/interceptors";
+import { getValueByKey } from "../src/utils";
 
 describe("interceptors", () => {
   const fetchMock = fetch as FetchMock;
@@ -342,22 +344,22 @@ describe("interceptors", () => {
     fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
 
     let textInterceptor = "";
-    const firstInterceptor: InterceptorRequest = () => {
+    const firstInterceptor: InterceptorResponse = () => {
       textInterceptor += "1";
     };
-    const secondInterceptor: InterceptorRequest = () => {
+    const secondInterceptor: InterceptorResponse = () => {
       textInterceptor += "2";
     };
 
     const instance = create({
       baseURL: "http://localhost:5000",
     });
-    const id = instance.interceptors.request.use(firstInterceptor);
-    instance.interceptors.request.eject(id);
+    const id = instance.interceptors.response.use(firstInterceptor);
+    instance.interceptors.response.eject(id);
 
     await instance.get("/todos/1", {
       interceptors: {
-        request: secondInterceptor,
+        response: secondInterceptor,
       },
     });
     expect(textInterceptor).toEqual("2");
@@ -382,6 +384,30 @@ describe("interceptors", () => {
     });
     instance.interceptors.request.use(secondInterceptor);
     instance.interceptors.request.clear();
+
+    await instance.get("/todos/1");
+    expect(textInterceptor).toEqual("");
+  });
+
+  it("shoud allow to clear interceptors for request", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ test: "test" }));
+
+    let textInterceptor = "";
+    const firstInterceptor: InterceptorResponse = () => {
+      textInterceptor += "1";
+    };
+    const secondInterceptor: InterceptorResponse = () => {
+      textInterceptor += "2";
+    };
+
+    const instance = create({
+      baseURL: "http://localhost:5000",
+      interceptors: {
+        response: [firstInterceptor],
+      },
+    });
+    instance.interceptors.response.use(secondInterceptor);
+    instance.interceptors.response.clear();
 
     await instance.get("/todos/1");
     expect(textInterceptor).toEqual("");
@@ -487,5 +513,32 @@ describe("interceptors", () => {
     }
     expect(textInterceptorRequest).toEqual("12");
     expect(textInterceptorResponse).toEqual("1");
+  });
+
+  it("add interceptor", async () => {
+    const interceptors = [];
+    addInterceptor(interceptors, () => {
+      return "1";
+    });
+    const __interceptorId = getValueByKey("__interceptorId", interceptors[0]);
+    expect(__interceptorId).toBeTruthy();
+  });
+
+  it("remove interceptor", async () => {
+    let interceptors = [];
+    const id = addInterceptor(interceptors, () => {
+      return "1";
+    });
+    interceptors = removeInterceptor(interceptors, id);
+    expect(interceptors.length).toBe(0);
+  });
+
+  it("clear interceptor", async () => {
+    let interceptors = [];
+    const id = addInterceptor(interceptors, () => {
+      return "1";
+    });
+    interceptors = removeInterceptor(interceptors, id);
+    expect(interceptors.length).toBe(0);
   });
 });

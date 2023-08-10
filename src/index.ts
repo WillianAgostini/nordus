@@ -70,6 +70,11 @@ function createRequest(nordusConfig?: NordusConfig) {
   return { nordusRequest, nordusConfigApi };
 }
 
+export async function request<T>(url: string, nordusConfig: NordusConfig) {
+  const { nordusRequest, nordusConfigApi } = createRequest(nordusConfig);
+  return await nordusRequest.request<T>(url, nordusConfigApi);
+}
+
 function mergeConfig(
   nordusConfig?: NordusConfig,
   nordusConfig2?: NordusConfig,

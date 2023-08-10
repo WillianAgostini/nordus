@@ -1,4 +1,4 @@
-import { NordusRequest } from "../src/request";
+import { request } from "../src/index";
 import { FetchMock } from "jest-fetch-mock";
 
 const fetchMock = fetch as FetchMock;
@@ -8,10 +8,9 @@ describe("request", () => {
   beforeEach(() => fetchMock.resetMocks());
 
   it("should throw invalid URL", async () => {
-    const nordus = new NordusRequest();
     fetchMock.mockResponseOnce("");
     try {
-      await nordus.request("/localhost", {
+      await request("/localhost", {
         method: "POST",
       });
     } catch (error) {
@@ -20,9 +19,8 @@ describe("request", () => {
   });
 
   it("should generate URL with params", async () => {
-    const nordus = new NordusRequest();
-    fetchMock.mockResponseOnce("");
-    await nordus.request("http://localhost:5000", {
+    fetchMock.mockResponseOnce(JSON.stringify({}));
+    await request("http://localhost:5000", {
       method: "GET",
       params: {
         test: "test",
