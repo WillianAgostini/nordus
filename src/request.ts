@@ -95,12 +95,15 @@ export class NordusRequest {
     try {
       const urlRequest = this.generateURL(url, nordusConfigApi);
       const body = this.getBody(nordusConfigApi);
+      const properties: any = {
+        method: nordusConfigApi?.method,
+        body: body,
+      };
+      if (abort.signal) {
+        properties.signal = abort.signal;
+      }
       const init = {
-        ...{
-          method: nordusConfigApi?.method,
-          body: body,
-          signal: abort.signal,
-        },
+        ...properties,
         ...nordusConfigApi,
       };
 
