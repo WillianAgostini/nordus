@@ -97,7 +97,6 @@ export class NordusRequest {
       const body = this.getBody(nordusConfigApi);
       const properties: any = {
         method: nordusConfigApi?.method,
-        body: body,
       };
       if (abort.signal) {
         properties.signal = abort.signal;
@@ -105,6 +104,7 @@ export class NordusRequest {
       const init = {
         ...properties,
         ...nordusConfigApi,
+        body: body,
       };
 
       request = new Request(urlRequest, init);
