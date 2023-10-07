@@ -104,13 +104,14 @@ export class NordusRequest {
       const init = {
         ...properties,
         ...nordusConfigApi,
-        body: body,
       };
-
+      if (body) {
+        init.body = body;
+      }
       request = new Request(urlRequest, init);
 
       this.setHeaders(nordusConfigApi, request);
-      this.setRequestType(request, nordusConfigApi);
+      this.setRequestType(nordusConfigApi, request);
     } catch (err) {
       error = err;
     }
@@ -181,7 +182,7 @@ export class NordusRequest {
     return new URL(url);
   }
 
-  private setRequestType(request: Request, nordusConfigApi: NordusConfigApi) {
+  private setRequestType(nordusConfigApi: NordusConfigApi, request: Request) {
     if (request.headers.has("Content-Type")) return;
 
     switch (nordusConfigApi.responseType) {
