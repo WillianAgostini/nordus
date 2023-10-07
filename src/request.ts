@@ -182,7 +182,7 @@ export class NordusRequest {
     return new URL(url);
   }
 
-  private setRequestType( nordusConfigApi: NordusConfigApi, request: Request) {
+  private setRequestType(nordusConfigApi: NordusConfigApi, request: Request) {
     if (request.headers.has("Content-Type")) return;
 
     switch (nordusConfigApi.responseType) {
