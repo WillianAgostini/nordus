@@ -1,6 +1,6 @@
 {
   "name": "nordus",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Promise based HTTP client for the node.js using Fetch",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
